@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>无人机森林火情巡检与预警平台</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIINfQfuBfGkIneNLsZ5v2xyZgv4E9mZOrQ="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <p class="eyebrow">Forest Fire Command</p>
+            <h1>无人机森林火情巡检与预警平台</h1>
+          </div>
+        </div>
+        <div class="header-controls">
+          <div class="stat-strip" aria-label="实时统计">
+            <div class="stat-item">
+              <span class="stat-label">在线无人机</span>
+              <strong id="onlineCount">0</strong>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">未处理告警</span>
+              <strong id="pendingCount">0</strong>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">最高风险</span>
+              <strong id="riskLevel">--</strong>
+            </div>
+          </div>
+          <label class="source-switch" title="切换 mock 数据或真实后端">
+            <span>Mock</span>
+            <input id="dataModeToggle" type="checkbox" />
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+            <span>Real</span>
+          </label>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="主视图切换">
+        <button class="tab-button active" data-view="dronesView" type="button">无人机列表</button>
+        <button class="tab-button" data-view="mapView" type="button">巡检地图</button>
+        <button class="tab-button" data-view="alertsView" type="button">告警中心</button>
+      </nav>
+
+      <main>
+        <section id="dronesView" class="view-panel active">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Fleet Monitor</p>
+              <h2>无人机实时状态</h2>
+            </div>
+            <span id="lastUpdatedDrones" class="muted"></span>
+          </div>
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>无人机</th>
+                  <th>状态</th>
+                  <th>电量</th>
+                  <th>经纬度</th>
+                  <th>巡检区域</th>
+                  <th>最后心跳</th>
+                </tr>
+              </thead>
+              <tbody id="droneTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="mapView" class="view-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Patrol Map</p>
+              <h2>巡检轨迹与疑似火点</h2>
+            </div>
+            <div class="map-tools">
+              <div class="map-mode-toggle" aria-label="地图模式切换">
+                <button id="standardMapModeBtn" class="active" type="button" data-map-mode="standard">标准地图</button>
+                <button id="satelliteMapModeBtn" type="button" data-map-mode="satellite">卫星地图</button>
+                <button id="schematicMapModeBtn" type="button" data-map-mode="schematic">示意地图</button>
+              </div>
+              <div class="legend">
+                <span><i class="legend-dot drone"></i>无人机</span>
+                <span><i class="legend-line"></i>轨迹</span>
+                <span><i class="legend-dot fire"></i>疑似火点</span>
+              </div>
+            </div>
+          </div>
+          <div id="map" class="map"></div>
+          <div id="droneColorLegend" class="drone-color-legend" aria-label="无人机颜色标识"></div>
+        </section>
+
+        <section id="alertsView" class="view-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Alert Center</p>
+              <h2>火情告警处置</h2>
+            </div>
+            <select id="alertStatusFilter" class="filter-select" aria-label="告警状态筛选">
+              <option value="all">全部告警</option>
+              <option value="pending">未处理</option>
+              <option value="confirmed">已确认</option>
+              <option value="ignored">已忽略</option>
+            </select>
+          </div>
+          <div class="alerts-layout">
+            <div id="alertList" class="alert-list"></div>
+            <aside class="alert-detail" aria-live="polite">
+              <div id="alertDetailEmpty" class="empty-state">选择一条告警查看详情</div>
+              <div id="alertDetail" class="hidden">
+                <div class="detail-header">
+                  <span id="detailLevel" class="level-badge"></span>
+                  <span id="detailStatus" class="status-pill"></span>
+                </div>
+                <h3 id="detailTitle"></h3>
+                <dl>
+                  <div><dt>告警编号</dt><dd id="detailId"></dd></div>
+                  <div><dt>无人机</dt><dd id="detailDrone"></dd></div>
+                  <div><dt>位置</dt><dd id="detailLocation"></dd></div>
+                  <div><dt>时间</dt><dd id="detailTime"></dd></div>
+                  <div><dt>原因</dt><dd id="detailReason"></dd></div>
+                  <div><dt>现场图像/识别快照</dt><dd id="detailImage"></dd></div>
+                </dl>
+                <div class="detail-actions">
+                  <button id="confirmAlertBtn" class="action-button confirm" type="button">确认</button>
+                  <button id="ignoreAlertBtn" class="action-button ignore" type="button">忽略</button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="statusbar">
+        <span id="connectionState">Mock 数据模式</span>
+        <span>轮询间隔 2s</span>
+        <span>后端 http://localhost:8000</span>
+      </footer>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="./mock.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

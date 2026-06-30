@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="无人机森林火情预警">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="70%">
+      <stop offset="0%" stop-color="#153a36" />
+      <stop offset="62%" stop-color="#071715" />
+      <stop offset="100%" stop-color="#030807" />
+    </radialGradient>
+    <linearGradient id="flame" x1="28" y1="54" x2="42" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd66b" />
+      <stop offset="54%" stop-color="#ff7a3d" />
+      <stop offset="100%" stop-color="#ff4d5a" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)" />
+  <path d="M10 46c11-5 17-3 24-1 7 2 12 2 20-3" fill="none" stroke="#1f695c" stroke-width="3" stroke-linecap="round" opacity=".58" />
+  <path d="M36 54c7-4 11-9 10-16-1-5-5-8-6-14-4 4-5 8-4 13-4-2-6-5-6-9-5 5-8 11-7 17 1 5 5 8 13 9z" fill="url(#flame)" />
+  <path d="M35 51c3-2 5-5 4-9 0-2-2-4-3-6-3 4-5 8-4 12 1 2 2 3 3 3z" fill="#fff2a8" opacity=".9" />
+  <g fill="none" stroke="#52e0d0" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 20h32M32 12v16" stroke-width="4" />
+    <circle cx="16" cy="20" r="5" stroke-width="3" />
+    <circle cx="48" cy="20" r="5" stroke-width="3" />
+    <circle cx="32" cy="12" r="4" stroke-width="3" />
+    <circle cx="32" cy="28" r="4" stroke-width="3" />
+  </g>
+  <circle cx="32" cy="20" r="5" fill="#52e0d0" />
+  <circle cx="32" cy="20" r="2" fill="#04100f" />
+</svg>

@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: forest-backend
+    ports:
+      - "8000:8000"
+
+  simulator:
+    build:
+      context: .
+      dockerfile: drone-simulator/Dockerfile
+    container_name: forest-simulator
+    depends_on:
+      - backend
+    environment:
+      # 容器内用服务名访问后端，正好用上 config.PLATFORM_URL 配置项
+      - PLATFORM_URL=http://backend:8000
+
+  frontend:
+    image: nginx:alpine
+    container_name: forest-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5500:80"
+    volumes:
+      # 直接挂载前端静态文件到 nginx，无需改 frontend 源码
+      - ./frontend:/usr/share/nginx/html:ro
